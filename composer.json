@@ -1,0 +1,10 @@
+{
+    "name": "berrygoudswaard/api-component",
+    "authors": [
+        {
+            "name": "Berry Goudswaard",
+            "email": "info@berrygoudswaard.nl"
+        }
+    ],
+    "require": {}
+}
