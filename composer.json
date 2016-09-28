@@ -1,10 +1,27 @@
 {
-    "name": "berrygoudswaard/api-component",
+    "name": "berrygoudswaard/cakephp-api",
+    "type": "cakephp-plugin",
+    "description": "",
+    "keywords": [
+        "cakephp",
+        "api"
+    ],
+    "homepages": "http://www.berrygoudswaard.nl",
+    "license": "MIT",
     "authors": [
         {
             "name": "Berry Goudswaard",
             "email": "info@berrygoudswaard.nl"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "BerryGoudswaard\\Api\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BerryGoudswaard\\Api\\Test\\": "tests/"
+        }
+    }
 }
