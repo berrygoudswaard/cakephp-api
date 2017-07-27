@@ -11,9 +11,11 @@ class ApiComponent extends Component
     private $message = 'OK';
     private $data = [];
     private $errors = [];
+    private $config;
 
     public function initialize(array $config)
     {
+        $this->config = $config;
         $this->controller = $this->_registry->getController();
     }
 
@@ -57,10 +59,30 @@ class ApiComponent extends Component
 
     public function setCors()
     {
-        $this->response->header([
-            'Access-Control-Allow-Headers' => 'Content-Type, Authorization',
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE',
-            'Access-Control-Allow-Origin' => '*'
-        ]);
+        if (!isset($this->config['cors'])) {
+            return;
+        }
+
+        $cors = [];
+        $originHeader = $this->controller->request->getHeader('origin');
+        $origin = reset ($originHeader);
+
+        if (($allowHeaders = $this->config['cors']['allowHeaders'])) {
+            $cors['Access-Control-Allow-Headers'] = implode($allowHeaders, ',');
+        }
+
+        if (($allowMethods = $this->config['cors']['allowMethods'])) {
+            $cors['Access-Control-Allow-Methods'] = implode($allowMethods, ',');
+        }
+
+        if (($allowCredentials = $this->config['cors']['allowCredentials'])) {
+            $cors['Access-Control-Allow-Credentials'] = $allowCredentials;
+        }
+
+        if (($allowOrigins = $this->config['cors']['allowOrigins']) && in_array($origin, $allowOrigins)) {
+            $cors['Access-Control-Allow-Origin'] = $origin;
+        }
+
+        $this->response->header($cors);
     }
 }

@@ -21,7 +21,14 @@ Plugin::load('BerryGoudswaard/Api');
 Then load the component where you need it by adding the following code to your controller:
 
 ```php
-$this->loadComponent('BerryGoudswaard/Api.Api');
+$this->loadComponent('BerryGoudswaard/Api.Api', [
+    'cors' => [
+        'allowHeaders' => ['Content-Type', 'Authorization'],
+        'allowMethods' => ['GET', 'POST', 'PUT', 'DELETE'],
+        'allowOrigins' => ['http://localhost:4200', 'http://www.berrygoudswaard.nl'],
+        'allowCredentials' => 'true',
+    ]
+]);
 ```
 
 ## Output data
