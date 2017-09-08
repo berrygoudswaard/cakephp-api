@@ -3,6 +3,8 @@ namespace BerryGoudswaard\Api\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\ORM\Query;
+use Cake\ORM\Entity;
+use Cake\Utility\Inflector;
 
 class ApiComponent extends Component
 {
@@ -31,14 +33,15 @@ class ApiComponent extends Component
 
     public function addData($key, $data, $options = [])
     {
-        $itemKey = ($data instanceof \Cake\ORM\Entity) ? 'item' : 'items';
+        $itemKey = ($data instanceof Entity) ? 'item' : 'items';
         $this->data[$key] = [$itemKey => $data];
     }
 
-    public function addErrors($model, $table)
+    public function addErrors(Entity $entity)
     {
-        foreach ($model->errors() as $key => $errors) {
-            $this->errors[$table->table()][$key]= $errors;
+        $underscoredName = Inflector::underscore($entity->getSource());
+        foreach ($entity->getErrors() as $key => $errors) {
+            $this->errors[$underscoredName][$key]= $errors;
         }
     }
 
