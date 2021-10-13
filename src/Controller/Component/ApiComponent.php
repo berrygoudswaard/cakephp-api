@@ -15,10 +15,10 @@ class ApiComponent extends Component
     private $errors = [];
     private $config;
 
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         $this->config = $config;
-        $this->controller = $this->_registry->getController();
+        $this->controller = $this->getController();
     }
 
     public function setStatusCode($statusCode)
@@ -52,12 +52,14 @@ class ApiComponent extends Component
             'code' => $this->statusCode,
             'data' => $this->data,
             'errors' => $this->errors,
-            '_serialize' => ['message', 'code', 'data', 'errors']
         ]);
 
-        $this->setCors();
-        $this->response = $this->response->withStatus($this->statusCode);
-        $this->controller->set($data);
+        $response = $this->setCors();
+        $response = $response->withStatus($this->statusCode);
+        $response = $response->withType('application/json');
+        $response = $response->withStringBody(json_encode($data, true));
+        $this->controller->setResponse($response);
+        return $response;
     }
 
     public function setCors()
@@ -67,23 +69,28 @@ class ApiComponent extends Component
         }
 
         $cors = [];
-        $originHeader = $this->controller->request->getHeader('origin');
+        $request = $this->controller->getRequest();
+        $response = $this->controller->getResponse();
+        $originHeader = $request->getHeader('origin');
         $origin = reset ($originHeader);
 
         if (($allowHeaders = $this->config['cors']['allowHeaders'])) {
-            $this->response = $this->response->withHeader('Access-Control-Allow-Headers', implode($allowHeaders, ','));
+            $response = $response->withHeader('Access-Control-Allow-Headers', implode($allowHeaders, ','));
         }
 
         if (($allowMethods = $this->config['cors']['allowMethods'])) {
-            $this->response = $this->response->withHeader('Access-Control-Allow-Methods', implode($allowMethods, ','));
+            $response = $response->withHeader('Access-Control-Allow-Methods', implode($allowMethods, ','));
         }
 
         if (($allowCredentials = $this->config['cors']['allowCredentials'])) {
-            $this->response = $this->response->withHeader('Access-Control-Allow-Credentials', $allowCredentials);
+            $response = $response->withHeader('Access-Control-Allow-Credentials', $allowCredentials);
         }
 
         if (($allowOrigins = $this->config['cors']['allowOrigins']) && in_array($origin, $allowOrigins)) {
-            $this->response = $this->response->withHeader('Access-Control-Allow-Origin', $origin);
+            $response = $response->withHeader('Access-Control-Allow-Origin', $origin);
         }
+
+        $this->controller->setResponse($response);
+        return $response;
     }
 }
